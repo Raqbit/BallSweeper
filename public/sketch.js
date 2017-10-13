@@ -1,18 +1,18 @@
 let gridWidth;
 let gridHeight;
-const totalBombs = 10;
+const totalBombs = 4;
 const size = 30;
 let grid;
 let firstPress;
+
+let correctFlagCounter = 0;
 
 function setup() {
     const cnv = createCanvas(301, 301);
     cnv.parent('sketch-parent');
 
     const restartBtn = select('#restart-btn');
-    const revealBtn = select('#reveal-btn');
     restartBtn.mousePressed(restart);
-    revealBtn.mousePressed(revealAll);
 
     gridWidth = Math.floor(width / size);
     gridHeight = Math.floor(height / size);
@@ -27,6 +27,9 @@ function setup() {
 }
 
 function draw() {
+    if (correctFlagCounter === totalBombs) {
+        revealAll();
+    }
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid.length; j++) {
             grid[i][j].draw();
@@ -40,6 +43,7 @@ function restart() {
             grid[i][j] = new Cell(i, j);
         }
     }
+    correctFlagCounter = 0;
     firstPress = true;
 }
 
@@ -49,8 +53,8 @@ function mousePressed() {
     if (xPos >= 0 && xPos < gridWidth && yPos >= 0 && yPos < gridHeight) {
         const square = grid[xPos][yPos];
         if (mouseButton === LEFT) {
-            if(firstPress){
-                genBombs(xPos,yPos);
+            if (firstPress) {
+                genBombs(xPos, yPos);
                 firstPress = false;
             }
             if (!square.exposed && !square.flagged) {
@@ -66,6 +70,12 @@ function mousePressed() {
             }
         } else if (mouseButton === RIGHT) {
             square.flagged = !square.flagged;
+
+            if (square.flagged && square.bomb) {
+                correctFlagCounter++;
+            } else {
+                correctFlagCounter--;
+            }
         }
 
     }
@@ -79,14 +89,13 @@ function revealAll() {
     }
 }
 
-function genBombs(excX,excY) {
+function genBombs(excX, excY) {
     let options = [];
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid.length; j++) {
-            if(excX === i && excY === j) {
-                return;
+            if (!(excX === i && excY === j)) {
+                options.push([i, j]);
             }
-            options.push([i, j]);
         }
     }
 

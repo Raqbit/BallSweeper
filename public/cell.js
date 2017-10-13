@@ -17,7 +17,7 @@ class Cell {
         if (this.flagged && !this.exposed) {
             push();
             noStroke();
-            fill(71, 204, 104)
+            fill(71, 204, 104);
             triangle(this.xPos + size * 0.2, this.yPos + size * 0.2, this.xPos + size * 0.2, this.yPos + size * 0.8, this.xPos + size * 0.8, this.yPos + size * 0.5)
             pop();
         }
@@ -49,23 +49,14 @@ class Cell {
     floodFill() {
         setTimeout(() => {
             for (let i = this.xIndex - 1; i <= this.xIndex + 1; i++) {
-                if (i >= 0 && i < gridWidth) {
-                    const square = grid[i][this.yIndex];
-                    if (!square.exposed && !square.bomb && !square.flagged) {
-                        square.exposed = true;
-                        if (square.bombCount === 0) {
-                            square.floodFill();
-                        }
-                    }
-                }
-            }
-            for (let i = this.yIndex - 1; i <= this.yIndex + 1; i++) {
-                if (i >= 0 && i < gridHeight) {
-                    const square = grid[this.xIndex][i];
-                    if (!square.exposed && !square.bomb && !square.flagged) {
-                        square.exposed = true;
-                        if (square.bombCount === 0) {
-                            square.floodFill();
+                for (let j = this.yIndex - 1; j <= this.yIndex + 1; j++) {
+                    if (i >= 0 && i < gridWidth && j >= 0 && j < gridHeight) {
+                        const square = grid[i][j];
+                        if (!square.exposed && !square.bomb && !square.flagged) {
+                            square.exposed = true;
+                            if (square.bombCount === 0) {
+                                square.floodFill();
+                            }
                         }
                     }
                 }

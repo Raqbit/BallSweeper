@@ -1,8 +1,9 @@
 let gridWidth;
 let gridHeight;
-const totalBombs = 25;
+const totalBombs = 10;
 const size = 30;
 let grid;
+let firstPress;
 
 function setup() {
     const cnv = createCanvas(301, 301);
@@ -22,8 +23,7 @@ function setup() {
             grid[i][j] = new Cell(i, j);
         }
     }
-    genBombs();
-    countBombs();
+    firstPress = true;
 }
 
 function draw() {
@@ -40,8 +40,7 @@ function restart() {
             grid[i][j] = new Cell(i, j);
         }
     }
-    genBombs();
-    countBombs();
+    firstPress = true;
 }
 
 function mousePressed() {
@@ -49,7 +48,11 @@ function mousePressed() {
     const yPos = Math.floor(mouseY / size);
     if (xPos >= 0 && xPos < gridWidth && yPos >= 0 && yPos < gridHeight) {
         const square = grid[xPos][yPos];
-        if (mouseButton == LEFT) {
+        if (mouseButton === LEFT) {
+            if(firstPress){
+                genBombs(xPos,yPos);
+                firstPress = false;
+            }
             if (!square.exposed && !square.flagged) {
                 square.exposed = true;
                 if (square.bomb) {
@@ -61,7 +64,7 @@ function mousePressed() {
                     }
                 }
             }
-        } else if (mouseButton == RIGHT) {
+        } else if (mouseButton === RIGHT) {
             square.flagged = !square.flagged;
         }
 
@@ -76,10 +79,13 @@ function revealAll() {
     }
 }
 
-function genBombs() {
+function genBombs(excX,excY) {
     let options = [];
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid.length; j++) {
+            if(excX === i && excY === j) {
+                return;
+            }
             options.push([i, j]);
         }
     }
@@ -92,7 +98,7 @@ function genBombs() {
         options.splice(index, 1);
         grid[i][j].bomb = true;
     }
-
+    countBombs();
 }
 
 function countBombs() {
